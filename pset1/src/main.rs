@@ -2,7 +2,7 @@ use std::{io::Stdin, str::FromStr};
 
 fn main() {
     let mut scanner = Scanner::new();
-    problems(&mut scanner, "D");
+    problems(&mut scanner, "E");
 }
 /// The main problem solution archive
 #[allow(dead_code, unused_variables)]
@@ -149,8 +149,94 @@ fn problems(scanner: &mut Scanner, num: &str) {
         }
         print!("{answer}");
     }
+    /// Keep track of both the min and the max of what a team could have. If the difference is greater than what could be reached, stop there
     fn p_e(scanner: &mut Scanner) -> () {
-        
+        let mut answer: String = String::new();
+        let t: usize = scanner.read_usize();
+        for _ in 0..t {
+            let score_string: Vec<u8> = scanner.read_string().as_bytes().to_vec();
+            let mut a_min_games_won: isize = 0;
+            let mut a_max_games_won: isize = 0;
+            let mut b_min_games_won: isize = 0;
+            let mut b_max_games_won: isize = 0;
+            let mut solved = false;
+            for counter in 0..score_string.len() {
+                if counter % 2 == 0 {
+                    if score_string[counter] == 48 {
+                        // Check if it is garuenteed that B wins
+                        if b_max_games_won - a_min_games_won > ((score_string.len() - 2 - counter) / 2) as isize {
+                            answer.push_str(&(counter+1).to_string());
+                            answer.push('\n');
+                            solved = true;
+                            break;
+                        } 
+                    } else if score_string[counter] == 49 {
+                        a_max_games_won = a_max_games_won + 1;
+                        a_min_games_won = a_min_games_won + 1;
+                        // Check if it is guarenteed that A wins
+                        if a_max_games_won - b_min_games_won > ((score_string.len() - counter) / 2) as isize {
+                            answer.push_str(&(counter+1).to_string());
+                            answer.push('\n');
+                            solved = true;
+                            break;
+                        } 
+                    } else if score_string[counter] == 63 {
+                        a_max_games_won = a_max_games_won + 1;
+                        if b_max_games_won - a_min_games_won > ((score_string.len() - 2 - counter) / 2) as isize {
+                            answer.push_str(&(counter+1).to_string());
+                            answer.push('\n');
+                            solved = true;
+                            break;
+                        } 
+                        if a_max_games_won - b_min_games_won > ((score_string.len() - counter) / 2) as isize {
+                            answer.push_str(&(counter+1).to_string());
+                            answer.push('\n');
+                            solved = true;
+                            break;
+                        } 
+                    }
+                } else if counter % 2 == 1 {
+                    if score_string[counter] == 48 {
+                        // Check if it is garuenteed that A wins
+                        if a_max_games_won - b_min_games_won > ((score_string.len() - 1 - counter) / 2) as isize {
+                            answer.push_str(&(counter+1).to_string());
+                            answer.push('\n');
+                            solved = true;
+                            break;
+                        } 
+                    } else if score_string[counter] == 49 {
+                        b_max_games_won = b_max_games_won + 1;
+                        b_min_games_won = b_min_games_won + 1;
+                        // Check if it is guarenteed that B wins
+                        if b_max_games_won - a_min_games_won > ((score_string.len() - 1 - counter) / 2) as isize {
+                            answer.push_str(&(counter+1).to_string());
+                            answer.push('\n');
+                            solved = true;
+                            break;
+                        } 
+                    } else if score_string[counter] == 63 {
+                        b_max_games_won = b_max_games_won + 1;
+                        if a_max_games_won - b_min_games_won > ((score_string.len() - 1 - counter) / 2) as isize {
+                            answer.push_str(&(counter+1).to_string());
+                            answer.push('\n');
+                            solved = true;
+                            break;
+                        } 
+                        if b_max_games_won - a_min_games_won > ((score_string.len() - 1 - counter) / 2) as isize {
+                            answer.push_str(&(counter+1).to_string());
+                            answer.push('\n');
+                            solved = true;
+                            break;
+                        } 
+
+                    }
+                }
+            }
+            if !solved {
+                answer.push_str("10\n");
+            }
+        }
+        print!("{answer}");
     }
     fn p_f(scanner: &mut Scanner) -> () {
         
