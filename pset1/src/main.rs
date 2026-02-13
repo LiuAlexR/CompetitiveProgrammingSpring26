@@ -2,7 +2,7 @@ use std::{io::Stdin, str::FromStr};
 
 fn main() {
     let mut scanner = Scanner::new();
-    problems(&mut scanner, "E");
+    problems(&mut scanner, "G");
 }
 /// The main problem solution archive
 #[allow(dead_code, unused_variables)]
@@ -238,14 +238,81 @@ fn problems(scanner: &mut Scanner, num: &str) {
         }
         print!("{answer}");
     }
-    fn p_f(scanner: &mut Scanner) -> () {
+    /// General strategy - select all from the right until left < d+1. Implemented through sliding window
+    fn p_f(scanner: &mut Scanner) {
+        let mut answer = String::new();
+        let t: usize = scanner.read_usize();
         
+        for _ in 0..t {
+            let n = scanner.read_usize();
+            let a = scanner.read_vec_generic::<i32>();
+            let mut left = 0;
+            for right in 0..n {
+                while a[left] < (right - left + 1) as i32 {
+                    left += 1;
+                }
+                
+                let cost = right - left + 1;
+                answer.push_str(&cost.to_string());
+                answer.push(' ');
+            }
+            answer.push('\n');
+        }
+        print!("{}", answer);
     }
     fn p_g(scanner: &mut Scanner) -> () {
-        
+        let mut answer = String::new();
+        let t: usize = scanner.read_usize();
+        for _ in 0..t {
+            let n: i32 = scanner.read_i32();
+            let a = scanner.read_vec_generic::<isize>();
+            let mut oddsum: isize = 0;
+            let mut evensum: isize = 0;
+            for i in 0..n {
+                if i % 2 == 0 {
+                    evensum = evensum + a[i as usize];
+                } else {
+                    oddsum = oddsum + a[i as usize];
+                }
+            }
+            if oddsum < evensum {
+                for i in 0..n {
+                    if i % 2 == 0 {
+                        answer.push_str(&a[i as usize].to_string());
+                        answer.push(' ');
+                    } else {
+                        answer.push_str("1 ");
+                    }
+                }
+            } else {
+                for i in 0..n {
+                    if i % 2 == 1 {
+                        answer.push_str(&a[i as usize].to_string());
+                        answer.push(' ');
+                    } else {
+                        answer.push_str("1 ");
+                    }
+                }
+            }
+            answer.push('\n');
+        }
+        print!("{answer}");
     }
     fn p_h(scanner: &mut Scanner) -> () {
-        
+        fn verify(the_string: &str) -> bool {
+            let mut found = false;
+            for i in 0..the_string.len()-7 {
+                if &the_string[i..i+7] == "abacaba" {
+                    if found {
+                        return false;
+                    }
+                    found = true;
+                }
+            }
+            return false;
+        }
+        let mut answer = String::new();
+        let t: usize = scanner.read_usize();
     }
     fn p_i(scanner: &mut Scanner) -> () {
         
@@ -255,7 +322,6 @@ fn problems(scanner: &mut Scanner, num: &str) {
     }
 }
 /// The scanner. It allows for readings of generic numbers, strings, and vectors of numbers
-#[allow(dead_code)]
 struct Scanner {
     reader: Stdin,
     buffer: String,
