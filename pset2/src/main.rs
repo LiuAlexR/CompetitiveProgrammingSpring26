@@ -29,7 +29,7 @@ fn p_a(scanner: &mut Scanner) {
             if a[i] > max {
                 max = a[i];
             }
-            solution
+            solution[i] = 
         }
     }
 }
