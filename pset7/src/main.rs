@@ -1,6 +1,6 @@
 fn main() {
     let mut scanner = Scanner::new();
-    problems(&mut scanner, "L");
+    problems(&mut scanner, "G");
 }
 /// The main problem solution archive
 #[allow(dead_code, unused_variables)]
@@ -21,142 +21,273 @@ fn problems(scanner: &mut Scanner, num: &str) {
         _ => (),
     }
 }
-/// Password
+/// Spell Check
 fn p_a(scanner: &mut Scanner) {
     let t = scanner.read_usize();
     let mut answer: String = String::new();
     for _ in 0..t {
-        let n = scanner.read_i32();
-        let _ = scanner.read_string();
-        let variations = (10 - n) * (9 - n) * 3;
-        answer.push_str(&variations.to_string());
-        answer.push('\n');
+        let n = scanner.read_usize();
+        let timur = scanner.read_string();
+        if n != 5 {
+            answer.push_str(&"NO\n".to_string());
+        } else {
+            if timur.contains('T') && timur.contains('i') && timur.contains('m') && timur.contains('u') && timur.contains('r') {
+                answer.push_str(&"YES\n".to_string());
+            } else {
+                answer.push_str(&"NO\n".to_string());
+            }
+        }
     }
     print!("{answer}");
 }
-/// Minimise Oneness
+/// Orac and Factors
 fn p_b(scanner: &mut Scanner) {
     let t = scanner.read_usize();
     let mut answer: String = String::new();
     for _ in 0..t {
-        let n = scanner.read_usize();
-        answer.push('1');
-        for _ in 0..n-1 {
-            answer.push('0');
+        let nk = scanner.read_vec_usize();
+        let mut n = nk[0];
+        let mut k = nk[1];
+        let mut smallest = n;
+        for i in 2..n {
+            if n % i == 0 {
+                smallest = i;
+                n = n + smallest;
+                k = k - 1;
+                break;
+            }
         }
+        while k > 0 {
+            if smallest == 2 {
+                n = n + 2 * k;
+                break;
+            }
+            for i in 2..(smallest + 1) {
+                if n % i == 0 {
+                    smallest = i;
+                    n = n + smallest;
+                    k = k - 1;
+                    break;
+                }
+            }
+        }
+        answer.push_str(&n.to_string());
         answer.push('\n');
     }
     print!("{answer}");
 }
-/// Longest Divisors Interval
+/// Traffic Light
 fn p_c(scanner: &mut Scanner) {
     let t = scanner.read_usize();
     let mut answer = String::new();
     for _ in 0..t {
-        let n = scanner.read_number_generic::<u64>();
-        let mut x = 1;
-        loop {
-            if n % x != 0 {
-                break;
-            }
-            x += 1;
+        let nc_string = scanner.read_string();
+        let mut nc = nc_string.split(' ');
+        let n = match nc.next() {
+            Some(x) => match x.parse::<usize>() {
+                Ok(y) => y,
+                Err(_) => 0,
+            },
+            None => {
+                0
+            },
+        };
+        let c = match nc.next() {
+            Some(x) => x.as_bytes()[0],
+            None => b'e',
+        };
+        let s = scanner.read_string().as_bytes().to_vec();
+        if c == b'g' {
+            answer.push_str("0\n");
+            continue;
         }
-        answer.push_str(&(x-1).to_string());
-        answer.push('\n');
+        let mut s_d: Vec<u8> = Vec::new();
+        for i in 0..n {
+            s_d.push(s[i]);
+        }
+        for i in 0..n {
+            s_d.push(s[i]);
+        }
+        
+        let mut max_wait = 0;
+        let mut last_g = 0;
+        let mut found_g = false;
+        for i in (0..2 * n).rev() {
+            if s_d[i] == b'g' {
+                last_g = i;
+                found_g = true;
+            }
+            if i < n && s_d[i] == c && found_g {
+                let wait = last_g - i;
+                if wait > max_wait {
+                    max_wait = wait;
+                }
+            }
+        }
+        answer.push_str(&format!("{}\n", max_wait));
     }
     print!("{answer}");
 }
-/// Emordnilap
+/// Ahahahahahahahaha
 fn p_d(scanner: &mut Scanner) {
     let t = scanner.read_usize();
     let mut answer: String = String::new();
     for _ in 0..t {
         let n = scanner.read_usize();
-        let mut res: usize = n;
-        let the_mod = 1000000007;
-        res = (res * (res - 1)) % the_mod;
-        for i in 1..(n + 1) {
-            res = res * i;
-            res = res % the_mod;
+        let a = scanner.read_vec_usize();
+        let mut zero_count = 0;
+        let mut one_count = 0;
+        for i in &a {
+            if i == &0 {
+                zero_count += 1;
+            } else {
+                one_count += 1;
+            }
         }
-        answer.push_str(&res.to_string());
+        if zero_count >= one_count {
+            answer.push_str(&zero_count.to_string());
+            answer.push('\n');
+            for _ in 0..zero_count {
+                answer.push('0');
+                answer.push(' ');
+            }
+            answer.push('\n');
+        } else {
+            if one_count % 2 == 0 {
+                answer.push_str(&one_count.to_string());
+                answer.push('\n');
+                for _ in 0..one_count {
+                    answer.push('1');
+                    answer.push(' ');
+                }
+                answer.push('\n');
+            } else {
+                answer.push_str(&(one_count - 1).to_string());
+                answer.push('\n');
+                for _ in 1..one_count {
+                    answer.push('1');
+                    answer.push(' ');
+                }
+                answer.push('\n');
+            }
+        }
+    }
+    print!("{answer}");
+}
+/// Diamond Miner
+fn p_e(scanner: &mut Scanner) {
+    let t = scanner.read_usize();
+    let mut answer: String = String::new();
+    for _ in 0..t {
+        let n = scanner.read_usize();
+        let mut miners: Vec<u64> = Vec::new();
+        let mut diamonds: Vec<u64> = Vec::new();
+        for _ in 0..(2*n) {
+            let input = scanner.read_vec_i64();
+            if input[0] == 0 {
+                miners.push(input[1].abs_diff(0));
+            } else {
+                diamonds.push(input[0].abs_diff(0));
+            }
+        }
+        miners.sort();
+        diamonds.sort();
+        let mut distance: f64 = 0.0;
+        for i in 0..n {
+            let d_2 = (miners[i] * miners[i] + diamonds[i] * diamonds[i]) as f64;
+            distance = distance + d_2.sqrt();
+        }
+        answer.push_str(&distance.to_string());
         answer.push('\n');
     }
     print!("{answer}");
 }
-/// Pasha and Stick
-fn p_e(scanner: &mut Scanner) {
-    let n = scanner.read_usize();
-    if n % 2 == 1 {
-        print!("{}", 0);
-    } else {
-        print!("{}", (((n / 2) - 1) / 2));
-    }
-}
-/// JOE is on TV!
+/// Little Alawn's Puzzle
 fn p_f(scanner: &mut Scanner) {
-    let n = scanner.read_usize();
-    let mut money: f64 = 0.0;
-    for i in 1..(n+1) {
-        money = money + 1 as f64 / i as f64;
+    let t = scanner.read_usize();
+    let mut answer: String = String::new();
+    for _ in 0..t {
+        let n = scanner.read_usize();
+        let a = scanner.read_vec_usize();
+        let b = scanner.read_vec_usize();
+        let mut first_to_second_cycle: HashMap<usize, usize> = HashMap::new();
+        for i in 0..n {
+            first_to_second_cycle.insert(a[i], b[i]);
+        }
+        let mut count_cycles = 0;
+        for i in 1..(n+1) {
+            if first_to_second_cycle.get(&i) == Some(&0) {
+                continue;
+            } else {
+                count_cycles = count_cycles + 1;
+                let mut cur_index = i;
+                let mut next_index = first_to_second_cycle[&cur_index];
+                first_to_second_cycle.insert(cur_index, 0);
+                while first_to_second_cycle[&next_index] != 0 {
+                    cur_index = next_index;
+                    next_index = first_to_second_cycle[&next_index];
+                    first_to_second_cycle.insert(cur_index, 0);
+                }
+            }
+        }
+        let val = pow(2, count_cycles, 1_000_000_007);
+        answer.push_str(&val.to_string());
+        answer.push('\n');
     }
-    print!("{money}");
+    print!("{answer}");
 }
-/// Binary Cafe
+/// Iva & Pav
 fn p_g(scanner: &mut Scanner) {
     let t = scanner.read_usize();
     let mut answer = String::new();
-    let mut memo: HashMap<usize, usize> = HashMap::new();
     for _ in 0..t {
-        let nk = scanner.read_vec_usize();
-        let n = nk[0];
-        let k = nk[1];
-        let max_possible = count_options(&mut memo, &n);
-        if k > 30 {
-            answer.push_str(&max_possible.to_string());
-            // answer.push_str(&(n+1).to_string());
-
-            answer.push('\n');
-        } else {
-            // let ans: usize = std::cmp::min(1 << k, n+1);
-            let ans: usize = std::cmp::min(1 << k, max_possible);
-            answer.push_str(&ans.to_string());
-            answer.push('\n');
+        let n = scanner.read_usize();
+        let a = scanner.read_vec_generic::<usize>();
+        let q = scanner.read_usize();
+        let mut lookup: Vec<Vec<usize>> = vec![vec![0; (n.ilog2() + 1) as usize]; n + 1];
+        for i in 0..n {
+            lookup[i][0] = a[i];
         }
+        let mut j: usize = 1;
+        while (1 << j) <= n {
+            let mut i = 0;
+            while i + (1 << j) <= n {
+                lookup[i][j] = lookup[i][j - 1] & lookup[i + (1 << (j - 1))][j - 1];
+                i += 1;
+            }
+            j += 1;
+        }
+        for _ in 0..q {
+            let lk = scanner.read_vec_usize();
+            let l = lk[0] - 1;
+            let k = lk[1];
+            if a[l] < k {
+                answer.push_str("-1 ");
+                continue;
+            }
+            let mut low = l;
+            let mut high = n - 1;
+            let mut res = l;
+
+            while low <= high {
+                let mid = (low + high) / 2;
+                
+                let len = mid - l + 1;
+                let log_len = len.ilog2() as usize;
+                let range_and = lookup[l][log_len] & lookup[mid + 1 - (1 << log_len)][log_len];
+
+                if range_and >= k {
+                    res = mid;
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
+                }
+            }
+            answer.push_str(&format!("{} ", res + 1));
+        }
+        answer.push('\n');
     }
     print!("{answer}");
-    fn count_options(memo: &mut HashMap<usize, usize>, num: &usize) -> usize {
-        match memo.get(num) {
-            Some(value) => {
-                return *value;
-            },
-            None => {
-                if *num == 0 {
-                    memo.insert(0, 1);
-                    return 1;
-                } else if *num == 1 {
-                    memo.insert(1, 2);
-                    return 2;
-                } else {
-                    let mut smallest_power: usize = 1;
-                    let mut power: usize = 0;
-                    while smallest_power < *num {
-                        smallest_power = smallest_power << 1;
-                        power = power + 1;
-                    }
-                    if *num == smallest_power - 1 {
-                        memo.insert(*num, smallest_power);
-                        return smallest_power;
-                    } else {
-                        let largest_power = smallest_power >> 1;
-                        let val = count_options(memo, &(num - largest_power)) + largest_power;
-                        memo.insert(*num, val);
-                        return val;
-                    }
-                }
-            },
-        }
-    }
 }
 /// Binomial Coefficients, Kind Of
 fn p_h(scanner: &mut Scanner) {
@@ -342,7 +473,7 @@ fn p_m(scanner: &mut Scanner) {
     }
     print!("{answer}");
 }
-use std::collections::HashSet;
+use std::{collections::HashSet, f64::consts::SQRT_2};
 /// The scanner. It allows for readings of generic numbers, strings, and vectors of numbers
 #[allow(unused_imports)]
 use std::{collections::{HashMap, VecDeque}, io::Stdin, str::FromStr};
@@ -417,5 +548,19 @@ fn gcd(a: usize, b: usize) -> usize {
 #[allow(dead_code)]
 fn lcm(a: usize, b: usize) -> usize {
     return a * b / gcd(a, b);
+}
+#[allow(dead_code)]
+fn pow(base: usize, power: usize, modulo: usize) -> usize {
+    let mut val: usize = 1;
+    let mut the_power = power;
+    let mut the_base = base;
+    while the_power > 0 {
+        if the_power % 2 == 1 {
+            val = (val * the_base) % modulo;
+        }
+        the_base = (the_base * the_base) % modulo;
+        the_power = the_power / 2;
+    }
+    return val;
 }
 // Last Line comment marker

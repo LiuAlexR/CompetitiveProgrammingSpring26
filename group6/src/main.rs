@@ -1,6 +1,6 @@
 fn main() {
     let mut scanner = Scanner::new();
-    problems(&mut scanner, "L");
+    problems(&mut scanner, "C");
 }
 /// The main problem solution archive
 #[allow(dead_code, unused_variables)]
@@ -21,142 +21,246 @@ fn problems(scanner: &mut Scanner, num: &str) {
         _ => (),
     }
 }
-/// Password
+/// Yet Another Array Problem
 fn p_a(scanner: &mut Scanner) {
     let t = scanner.read_usize();
     let mut answer: String = String::new();
     for _ in 0..t {
-        let n = scanner.read_i32();
-        let _ = scanner.read_string();
-        let variations = (10 - n) * (9 - n) * 3;
-        answer.push_str(&variations.to_string());
-        answer.push('\n');
-    }
-    print!("{answer}");
-}
-/// Minimise Oneness
-fn p_b(scanner: &mut Scanner) {
-    let t = scanner.read_usize();
-    let mut answer: String = String::new();
-    for _ in 0..t {
         let n = scanner.read_usize();
-        answer.push('1');
-        for _ in 0..n-1 {
-            answer.push('0');
+        let a = scanner.read_vec_usize();
+        let mut x: usize = 2;
+        'outer: while x < 1000000000000000000 {
+            for i in 0..n {
+                if gcd(x, a[i]) == 1 {
+                    answer.push_str(&format!("{}\n", x));
+                    break 'outer;
+                }
+            }
+            if x == 2 {
+                x = 3;
+            } else {
+                x = x + 2;
+            }
         }
-        answer.push('\n');
     }
     print!("{answer}");
 }
-/// Longest Divisors Interval
+/// Game with a Fraction
+fn p_b(scanner: &mut Scanner) {
+    let n = scanner.read_usize();
+    let sushi = scanner.read_vec_usize();
+    
+    let mut current_block = 0;
+    let mut prev_block = 0;
+    let mut max_pieces = 0;
+    let mut cur_type = sushi[0];
+
+    for s in sushi {
+        if s == cur_type {
+            current_block += 1;
+        } else {
+            prev_block = current_block;
+            current_block = 1;
+            cur_type = s;
+        }
+        let valid_here = 2 * std::cmp::min(prev_block, current_block);
+        if valid_here > max_pieces {
+            max_pieces = valid_here;
+        }
+    }
+    
+    print!("{max_pieces}");
+}
+/// Meximum Array 2
 fn p_c(scanner: &mut Scanner) {
     let t = scanner.read_usize();
     let mut answer = String::new();
     for _ in 0..t {
-        let n = scanner.read_number_generic::<u64>();
-        let mut x = 1;
-        loop {
-            if n % x != 0 {
-                break;
-            }
-            x += 1;
+        let nkq = scanner.read_vec_usize();
+        let n = nkq[0];
+        let k = nkq[1];
+        let q = nkq[2];
+        let mut possible = vec![1000; n];
+        let mut depending: Vec<usize> = vec![0; n];
+        let mut queries: Vec<Vec<usize>> = vec![];
+        for _ in 0..q {
+            let clr = scanner.read_vec_usize();
+            queries.push(clr);
         }
-        answer.push_str(&(x-1).to_string());
+        for i in 0..q {
+            if queries[i][0] == 1 {
+                for j in (queries[i][1] - 1)..(queries[i][2]) {
+                    possible[j] = k;
+                    depending[j] = depending[j] + 1;
+                }
+            }
+        }
+        for i in 0..q {
+            if queries[i][0] == 2 {
+                let mut running = 0;
+                for j in (queries[i][1] - 1)..(queries[i][2]) {
+                    if possible[j] == k {
+                        possible[j] = k + 1;
+                    } else {
+                        possible[j] = running;
+                        if running < k - 1 {
+                            running = running + 1;
+                        }
+                    }
+                }
+            }
+        }
+        for i in possible {
+            answer.push_str(&i.to_string());
+            answer.push(' ');
+        }
+        answer.push('\n');
+
+    }
+    print!("{answer}");
+}
+/// Robin Hood in Town
+fn p_d(scanner: &mut Scanner) {
+    let t = scanner.read_usize();
+    let mut answer = String::new();
+    for _ in 0..t {
+        let n = scanner.read_usize();
+        let mut a = scanner.read_vec_i64();
+        
+        if n <= 2 {
+            answer.push_str("-1\n");
+            continue;
+        }
+
+        a.sort();
+        let sum: i64 = a.iter().sum();
+    
+        let target_wealth = a[n / 2];
+        let x = 2 * (n as i64) * target_wealth - sum + 1;
+
+        if x < 0 {
+            answer.push_str("0\n");
+        } else {
+            answer.push_str(&format!("{}\n", x));
+        }
+    }
+    print!("{answer}");
+}
+/// Brightness Begins
+fn p_e(scanner: &mut Scanner) {
+    let t = scanner.read_usize();
+    let mut answer: String = String::new();
+    for _ in 0..t {
+        let k = scanner.read_usize();
+        let mut low = 1usize;
+        let mut high = 2_000_000_000_000_000_000;
+        let mut ans = high;
+
+        while low <= high {
+            let mid = low + (high - low) / 2;
+            let s = (mid as f64).sqrt() as usize;
+
+            let root = if (s + 1) * (s + 1) <= mid {
+                s + 1
+            } else if s * s > mid {
+                s - 1
+            } else {
+                s
+            };
+
+            let on_bulbs = mid - root;
+
+            if on_bulbs >= k {
+                ans = mid;
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+        answer.push_str(&ans.to_string());
         answer.push('\n');
     }
     print!("{answer}");
 }
-/// Emordnilap
-fn p_d(scanner: &mut Scanner) {
+/// Yet another Problem about Pairs Satisfying an Inequailty
+fn p_f(scanner: &mut Scanner) {
     let t = scanner.read_usize();
     let mut answer: String = String::new();
     for _ in 0..t {
         let n = scanner.read_usize();
-        let mut res: usize = n;
-        let the_mod = 1000000007;
-        res = (res * (res - 1)) % the_mod;
-        for i in 1..(n + 1) {
-            res = res * i;
-            res = res % the_mod;
+        let a = scanner.read_vec_usize();
+        let mut working_idx: Vec<usize> = vec![0; 0];
+        for i in 0..n {
+            if a[i] < i + 1 {
+                working_idx.push(i + 1);
+            }
         }
-        answer.push_str(&res.to_string());
-        answer.push('\n');
+        let mut total_pairs: i64 = 0;
+        for &j_idx in &working_idx {
+            let target = a[(j_idx - 1) as usize];
+            let count = match working_idx.binary_search(&target) {
+                Ok(pos) => pos,
+                Err(pos) => pos,
+            };
+            
+            total_pairs += count as i64;
+        }
+        answer.push_str(&format!("{}\n", total_pairs));
     }
     print!("{answer}");
 }
-/// Pasha and Stick
-fn p_e(scanner: &mut Scanner) {
-    let n = scanner.read_usize();
-    if n % 2 == 1 {
-        print!("{}", 0);
-    } else {
-        print!("{}", (((n / 2) - 1) / 2));
-    }
-}
-/// JOE is on TV!
-fn p_f(scanner: &mut Scanner) {
-    let n = scanner.read_usize();
-    let mut money: f64 = 0.0;
-    for i in 1..(n+1) {
-        money = money + 1 as f64 / i as f64;
-    }
-    print!("{money}");
-}
-/// Binary Cafe
+/// Iva & Pav
 fn p_g(scanner: &mut Scanner) {
     let t = scanner.read_usize();
     let mut answer = String::new();
-    let mut memo: HashMap<usize, usize> = HashMap::new();
     for _ in 0..t {
-        let nk = scanner.read_vec_usize();
-        let n = nk[0];
-        let k = nk[1];
-        let max_possible = count_options(&mut memo, &n);
-        if k > 30 {
-            answer.push_str(&max_possible.to_string());
-            // answer.push_str(&(n+1).to_string());
-
-            answer.push('\n');
-        } else {
-            // let ans: usize = std::cmp::min(1 << k, n+1);
-            let ans: usize = std::cmp::min(1 << k, max_possible);
-            answer.push_str(&ans.to_string());
-            answer.push('\n');
+        let n = scanner.read_usize();
+        let a = scanner.read_vec_generic::<usize>();
+        let q = scanner.read_usize();
+        let mut lookup: Vec<Vec<usize>> = vec![vec![0; (n.ilog2() + 1) as usize]; n + 1];
+        for i in 0..n {
+            lookup[i][0] = a[i];
         }
+        let mut j: usize = 1;
+        while (1 << j) <= n {
+            let mut i = 0;
+            while i + (1 << j) <= n {
+                lookup[i][j] = lookup[i][j - 1] & lookup[i + (1 << (j - 1))][j - 1];
+                i += 1;
+            }
+            j += 1;
+        }
+        for _ in 0..q {
+            let lk = scanner.read_vec_usize();
+            let l = lk[0] - 1;
+            let k = lk[1];
+            if a[l] < k {
+                answer.push_str("-1 ");
+                continue;
+            }
+            let mut low = l;
+            let mut high = n - 1;
+            let mut res = l;
+
+            while low <= high {
+                let mid = (low + high) / 2;
+                
+                let len = mid - l + 1;
+                let log_len = len.ilog2() as usize;
+                let range_and = lookup[l][log_len] & lookup[mid + 1 - (1 << log_len)][log_len];
+
+                if range_and >= k {
+                    res = mid;
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
+                }
+            }
+            answer.push_str(&format!("{} ", res + 1));
+        }
+        answer.push('\n');
     }
     print!("{answer}");
-    fn count_options(memo: &mut HashMap<usize, usize>, num: &usize) -> usize {
-        match memo.get(num) {
-            Some(value) => {
-                return *value;
-            },
-            None => {
-                if *num == 0 {
-                    memo.insert(0, 1);
-                    return 1;
-                } else if *num == 1 {
-                    memo.insert(1, 2);
-                    return 2;
-                } else {
-                    let mut smallest_power: usize = 1;
-                    let mut power: usize = 0;
-                    while smallest_power < *num {
-                        smallest_power = smallest_power << 1;
-                        power = power + 1;
-                    }
-                    if *num == smallest_power - 1 {
-                        memo.insert(*num, smallest_power);
-                        return smallest_power;
-                    } else {
-                        let largest_power = smallest_power >> 1;
-                        let val = count_options(memo, &(num - largest_power)) + largest_power;
-                        memo.insert(*num, val);
-                        return val;
-                    }
-                }
-            },
-        }
-    }
 }
 /// Binomial Coefficients, Kind Of
 fn p_h(scanner: &mut Scanner) {
@@ -342,7 +446,7 @@ fn p_m(scanner: &mut Scanner) {
     }
     print!("{answer}");
 }
-use std::collections::HashSet;
+use std::{collections::HashSet, f64::consts::SQRT_2, process::id};
 /// The scanner. It allows for readings of generic numbers, strings, and vectors of numbers
 #[allow(unused_imports)]
 use std::{collections::{HashMap, VecDeque}, io::Stdin, str::FromStr};
@@ -417,5 +521,33 @@ fn gcd(a: usize, b: usize) -> usize {
 #[allow(dead_code)]
 fn lcm(a: usize, b: usize) -> usize {
     return a * b / gcd(a, b);
+}
+#[allow(dead_code)]
+fn pow(base: usize, power: usize, modulo: usize) -> usize {
+    let mut val: usize = 1;
+    let mut the_power = power;
+    let mut the_base = base;
+    while the_power > 0 {
+        if the_power % 2 == 1 {
+            val = (val * the_base) % modulo;
+        }
+        the_base = (the_base * the_base) % modulo;
+        the_power = the_power / 2;
+    }
+    return val;
+}
+fn mmax(n1: usize, n2: usize) -> usize {
+    if n1 >= n2 {
+        return n1;
+    } else {
+        return n2;
+    }
+}
+fn mmin(n1: usize, n2: usize) -> usize {
+    if n1 <= n2 {
+        return n1;
+    } else {
+        return n2;
+    }
 }
 // Last Line comment marker
