@@ -1,6 +1,6 @@
 fn main() {
     let mut scanner = Scanner::new();
-    problems(&mut scanner, "B");
+    problems(&mut scanner, "A");
 }
 /// The main problem solution archive
 #[allow(dead_code, unused_variables)]
@@ -21,18 +21,23 @@ fn problems(scanner: &mut Scanner, num: &str) {
         _ => (),
     }
 }
-/// A Wonderful Contest
+/// Disturbing Distribution
 fn p_a(scanner: &mut Scanner) {
     let t = scanner.read_usize();
     let mut answer = String::new();
     for _ in 0..t {
         let n = scanner.read_usize();
         let a = scanner.read_vec_usize();
-        if a.contains(&(100 as usize)) {
-            answer.push_str(&"YES\n");
-        } else {
-            answer.push_str(&"NO\n");
+        let mut sum = 0;
+        for i in 0..n {
+            if a[i] != 1 {
+                sum = sum + a[i];
+            }
         }
+        if a[n - 1] == 1 {
+            sum += 1;
+        }
+        answer.push_str(&format!("{sum}\n"));
     }
     print!("{answer}");
 }
@@ -42,58 +47,7 @@ fn p_b(scanner: &mut Scanner) {
     let mut answer = String::new();
     
     for _ in 0..t {
-        let nm = scanner.read_vec_usize();
-        let n = nm[0];
-        let m = nm[1];
-        let mut a = scanner.read_vec_i64();
-        let x = scanner.read_vec_usize();
-        let mut a_e: Vec<i64> = vec![];
-        let mut a_o: Vec<i64> = vec![];
-        for i in 0..n {
-            if i % 2 == 0 {
-                a_e.push(a[i]);
-            } else {
-                a_o.push(a[i]);
-            }
-        }
-        a_e.sort();
-        a_e.reverse();
-        a_o.sort();
-        a_o.reverse();
-        let mut sum = 0;
-        let mut a_e_counter = 0;
-        let mut a_o_counter = 0;
-        for i in 0..m {
-            if x[i] % 2 == 0 {
-                a_e_counter += 1;
-            } else {
-                a_o_counter += 1;
-            }
-        }   
-        let mut marks_left_o = a_o_counter; 
-        if a_e.len() > 0 && a_e[0] < 0 {
-            sum -= a_e[0];
-        }
-        for val in a_e {
-            if val > 0 && marks_left_o > 0 {
-                marks_left_o -= 1; 
-            } else {
-                sum += val; // Keep in sum
-            }
-        }
-        if a_o.len() > 0 && a_o[0] < 0 {
-            sum -= a_o[0];
-        }
         
-        let mut marks_left_e = a_e_counter; 
-        for val in a_o {
-            if val > 0 && marks_left_e > 0 {
-                marks_left_e -= 1; 
-            } else {
-                sum += val; 
-            }
-        }
-        answer.push_str(&format!("{sum}\n"));
     }
     print!("{answer}");
 }
