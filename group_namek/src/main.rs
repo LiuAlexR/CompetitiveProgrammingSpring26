@@ -29,11 +29,7 @@ fn p_a(scanner: &mut Scanner) {
         end: u8,
     }
     impl StringEssentials {
-        fn merge(&self, other: &StringEssentials) -> StringEssentials {
-            let mut new_struct = StringEssentials { start: self.start, c_score: self.c_score + other.c_score, n_score: self.n_score + other.n_score, end: other.end };
-            if (self.end + 1) % 5 == 0
-            new_struct
-        }
+
     }
     let t = scanner.read_usize();
     let mut answer: String = String::new();
